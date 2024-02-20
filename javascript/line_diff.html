@@ -1,0 +1,44 @@
+<html>
+  <body>
+    <input type="file" name="input1" id="input1">
+    <br>
+    <input type="file" name="input2" id="input2">
+    <br>
+
+    <pre id="output1"></pre>
+    <pre id="output2"></pre>
+
+    <script type="text/javascript">
+      
+    </script>
+
+    <p id="result"></p>
+
+    <script src="diff_match_patch.js"></script>
+    <script src="line_diff.js"></script>
+
+    <script>
+      // Read file from local txt
+      readFile("input1", "output1");
+      readFile("input2", "output2");
+
+      // Diff
+      const dmp = new diff_match_patch();
+
+      const text1 = `Hello\nWorld\nThis is a test\n`;
+      const text2 = `Hello\nWorld\nThis is another test\n`;
+      var diff = computeLineDiff(dmp, text1, text2);
+
+      // Print diff in control panel
+      console.log(diff);
+      console.log("Differences:");
+      diff.forEach(function(d) {
+        console.log(d[0], d[1]);
+      });
+
+      // Render HTML on browser
+      var diffhtml = dmp.diff_prettyHtml(diff);
+      document.getElementById("result").innerHTML = diffhtml;
+    </script>
+  </body>
+</html>
