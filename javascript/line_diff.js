@@ -17,26 +17,98 @@ function computeLineDiff(dmp, text1, text2) {
     // 使用 diff_charsToLines_ 函数将差异转换回文本行
     dmp.diff_charsToLines_(diffs, lineArray);
     
-    dmp.diff_cleanupSemantic(diffs);
+    // dmp.diff_cleanupSemantic(diffs);
 
-    return diffs;
+    var diffHtml = dmp.diff_prettyHtml(diffs);
+
+    return diffHtml;
 }
 
-function readFile(inputId, outputId) {
+function readFile(inputId, outputId, text) {
     document.getElementById(inputId)
         .addEventListener('change', function () {
 
           let fr = new FileReader();
           fr.onload = function () {
-            document.getElementById(outputId)
-              .textContent = fr.result;
-            console.log(fr.result)
+            // document.getElementById(outputId)
+            //   .textContent = fr.result;
+            // console.log(fr.result)
+            text.str = fr.result;
           }
-
-          fr.readAsText(this.files[0]);
-
-          return fr;
+          try {
+            fr.readAsText(this.files[0]);
+          }
+          catch(e) {
+            text.str = ``;
+            console.log(e);
+          }
+          
         })
+}
+
+function launchDiff() {
+    // console.log("-------in btn---------");
+    // console.log(`text1: ${text1.str}`);
+    // console.log(`text2: ${text2.str}`);
+    var ms_start = (new Date()).getTime();
+    // Diff
+    const dmp = new diff_match_patch();
+      
+    var diffs = computeLineDiff(dmp, text1.str, text2.str);
+
+    // Print diff in control panel
+    // console.log(diff);
+    // console.log("Differences:");
+    // diff.forEach(function(d) {
+    //   console.log(d[0], d[1]);
+    // });
+    // Show execution time
+    var ms_end = (new Date()).getTime();
+    document.getElementById('diffSpeed').innerText = 'Time: ' + (ms_end - ms_start) / 1000 + 's';
+
+    // Render HTML on browser
+    document.getElementById("result").innerHTML = diffs;
+
+    document.getElementById('originalFile').innerHTML = '';
+    document.getElementById('newFile').innerHTML = '';
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(diffs, 'text/html');
+    const hunks = doc.querySelectorAll('*');
+    console.log(hunks);
+    // Pass the 3 root tags(<html>, <head>, <body>) and iterate through all tags
+    for (var i = 3; i < hunks.length; i++) {
+        switch (hunks[i].tagName) {
+            case 'SPAN':
+                document.getElementById('originalFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                document.getElementById('newFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                // var content = document.createTextNode(hunks[i].innerText);
+                // content.innerHTML = hunks[i].innerHTML;
+                // oriItem.appendChild(content);
+
+                // var newItem = document.getElementById('newFile');
+                // console.log(hunks[i]);
+                break;
+            case 'DEL':
+                document.getElementById('originalFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                // console.log(hunks[i]);
+                break;
+            case 'INS':
+                document.getElementById('newFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                // console.log(hunks[i]);
+                break;
+            default:
+                break;
+        }
+
+        // Pass <br> tag
+        // if (hunks[i].tagName !== "BR") {
+            
+        //     console.log(hunks[i]);
+        // }
+            
+    }
+    console.log(doc.getElementsByTagName('*'));
 }
 
 // 示例用法
