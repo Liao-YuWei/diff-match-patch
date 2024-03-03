@@ -1,0 +1,44 @@
+/* .box {
+    fill: none;
+} */
+
+#svgResult{
+    width: 80%;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.box.equal {
+    stroke: black;
+    stroke-width: 2;
+    fill: none;
+}
+
+.box.delete {
+    stroke: red;
+    stroke-width: 3;
+    fill: #ffe6e6;
+}
+
+.box.insert {
+    stroke: green;
+    stroke-width: 3;
+    fill: #e6ffe6;
+}
+
+.boxtext.equal {
+    fill: black;
+}
+
+.boxtext.delete {
+    fill: red;
+    font-weight: 600;
+    text-decoration-line: line-through;
+}
+
+.boxtext.insert {
+    fill: green;
+    font-weight: 600;
+    text-decoration-line: underline;
+}

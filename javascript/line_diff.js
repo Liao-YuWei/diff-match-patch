@@ -1,6 +1,9 @@
 // // 引入 diff-match-patch 库
 // const { diff_match_patch } = require('diff-match-patch');
 
+// const { render } = require('render');
+// import { render } from './render.js';
+
 // 定义函数来计算两个文本文件之间的差异
 function computeLineDiff(dmp, text1, text2) {
     // 创建 diff_match_patch 实例
@@ -66,7 +69,7 @@ function launchDiff() {
     var ms_end = (new Date()).getTime();
     document.getElementById('diffSpeed').innerText = 'Time: ' + (ms_end - ms_start) / 1000 + 's';
 
-    // Render HTML on browser
+    // Render HTML on DOM
     document.getElementById("result").innerHTML = diffs;
 
     document.getElementById('originalFile').innerHTML = '';
@@ -74,14 +77,26 @@ function launchDiff() {
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(diffs, 'text/html');
+    // console.log(doc);
     const hunks = doc.querySelectorAll('*');
     console.log(hunks);
+    var diffArr = [];
     // Pass the 3 root tags(<html>, <head>, <body>) and iterate through all tags
-    for (var i = 3; i < hunks.length; i++) {
+    for (let i = 3; i < hunks.length; i++) {
         switch (hunks[i].tagName) {
             case 'SPAN':
                 document.getElementById('originalFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
                 document.getElementById('newFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                
+                var blocks = hunks[i].innerHTML.split("\n\u00B6<br>");
+                for (let j = 0; j < blocks.length; j++) {
+                    if (blocks[j] === '')
+                        continue;
+                    diffArr.push({
+                        block: `${blocks[j]}`,
+                        type: 'equal'
+                    });
+                }
                 // var content = document.createTextNode(hunks[i].innerText);
                 // content.innerHTML = hunks[i].innerHTML;
                 // oriItem.appendChild(content);
@@ -91,10 +106,36 @@ function launchDiff() {
                 break;
             case 'DEL':
                 document.getElementById('originalFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                var brs = hunks[i].querySelectorAll('*');
+                for (let j = 0; j < brs.length; j++)
+                  document.getElementById('newFile').insertAdjacentHTML('beforeend', '<br>');
+
+                var blocks = hunks[i].innerHTML.split("\n\u00B6<br>");
+                for (let j = 0; j < blocks.length; j++) {
+                    if (blocks[j] === '')
+                        continue;
+                    diffArr.push({
+                        block: `${blocks[j]}`,
+                        type: 'delete'
+                    });
+                }
                 // console.log(hunks[i]);
                 break;
             case 'INS':
+                var brs = hunks[i].querySelectorAll('*');
+                for (let j = 0; j < brs.length; j++)
+                    document.getElementById('originalFile').insertAdjacentHTML('beforeend', '<br>');
                 document.getElementById('newFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                
+                var blocks = hunks[i].innerHTML.split("\n\u00B6<br>");
+                for (let j = 0; j < blocks.length; j++) {
+                    if (blocks[j] === '')
+                        continue;
+                    diffArr.push({
+                        block: `${blocks[j]}`,
+                        type: 'insert'
+                    });
+                }
                 // console.log(hunks[i]);
                 break;
             default:
@@ -108,6 +149,8 @@ function launchDiff() {
         // }
             
     }
+    render(diffArr);
+    console.log(diffArr);
     console.log(doc.getElementsByTagName('*'));
 }
 

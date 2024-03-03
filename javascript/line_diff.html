@@ -2,6 +2,10 @@
   <head>
     <script src="diff_match_patch.js"></script>
     <script src="line_diff.js"></script>
+    <script src="render.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
     <input type="file" name="input1" id="input1">
@@ -29,6 +33,11 @@
       </td>
     </tr>
     </table>
+
+    <div id="svgResult">
+      <!-- <svg width="600" height="400"></svg> -->
+    </div>
+    
 
     <script>
       // Intialized input strings
