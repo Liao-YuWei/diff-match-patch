@@ -3,7 +3,7 @@
 } */
 
 #svgResult{
-    width: 80%;
+    width: 95%;
     margin: auto;
     display: flex;
     justify-content: center;
@@ -29,16 +29,19 @@
 
 .boxtext.equal {
     fill: black;
+    font-size: 0.5em;
 }
 
 .boxtext.delete {
     fill: red;
     font-weight: 600;
     text-decoration-line: line-through;
+    font-size: 0.5em;
 }
 
 .boxtext.insert {
     fill: green;
     font-weight: 600;
     text-decoration-line: underline;
+    font-size: 0.5em;
 }

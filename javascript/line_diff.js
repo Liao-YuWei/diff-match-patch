@@ -70,23 +70,23 @@ function launchDiff() {
     document.getElementById('diffSpeed').innerText = 'Time: ' + (ms_end - ms_start) / 1000 + 's';
 
     // Render HTML on DOM
-    document.getElementById("result").innerHTML = diffs;
+    // document.getElementById("result").innerHTML = diffs;
 
-    document.getElementById('originalFile').innerHTML = '';
-    document.getElementById('newFile').innerHTML = '';
+    // document.getElementById('originalFile').innerHTML = '';
+    // document.getElementById('newFile').innerHTML = '';
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(diffs, 'text/html');
     // console.log(doc);
     const hunks = doc.querySelectorAll('*');
-    console.log(hunks);
+    // console.log(hunks);
     var diffArr = [];
     // Pass the 3 root tags(<html>, <head>, <body>) and iterate through all tags
     for (let i = 3; i < hunks.length; i++) {
         switch (hunks[i].tagName) {
             case 'SPAN':
-                document.getElementById('originalFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
-                document.getElementById('newFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                // document.getElementById('originalFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                // document.getElementById('newFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
                 
                 var blocks = hunks[i].innerHTML.split("\n\u00B6<br>");
                 for (let j = 0; j < blocks.length; j++) {
@@ -105,10 +105,10 @@ function launchDiff() {
                 // console.log(hunks[i]);
                 break;
             case 'DEL':
-                document.getElementById('originalFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
-                var brs = hunks[i].querySelectorAll('*');
-                for (let j = 0; j < brs.length; j++)
-                  document.getElementById('newFile').insertAdjacentHTML('beforeend', '<br>');
+                // document.getElementById('originalFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                // var brs = hunks[i].querySelectorAll('*');
+                // for (let j = 0; j < brs.length; j++)
+                //   document.getElementById('newFile').insertAdjacentHTML('beforeend', '<br>');
 
                 var blocks = hunks[i].innerHTML.split("\n\u00B6<br>");
                 for (let j = 0; j < blocks.length; j++) {
@@ -122,10 +122,10 @@ function launchDiff() {
                 // console.log(hunks[i]);
                 break;
             case 'INS':
-                var brs = hunks[i].querySelectorAll('*');
-                for (let j = 0; j < brs.length; j++)
-                    document.getElementById('originalFile').insertAdjacentHTML('beforeend', '<br>');
-                document.getElementById('newFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
+                // var brs = hunks[i].querySelectorAll('*');
+                // for (let j = 0; j < brs.length; j++)
+                //     document.getElementById('originalFile').insertAdjacentHTML('beforeend', '<br>');
+                // document.getElementById('newFile').insertAdjacentHTML('beforeend', hunks[i].outerHTML);
                 
                 var blocks = hunks[i].innerHTML.split("\n\u00B6<br>");
                 for (let j = 0; j < blocks.length; j++) {
@@ -150,8 +150,8 @@ function launchDiff() {
             
     }
     render(diffArr);
-    console.log(diffArr);
-    console.log(doc.getElementsByTagName('*'));
+    // console.log(diffArr);
+    // console.log(doc.getElementsByTagName('*'));
 }
 
 // 示例用法
