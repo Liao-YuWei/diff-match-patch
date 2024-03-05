@@ -9,37 +9,37 @@
     justify-content: center;
 }
 
-.box.equal {
+.equal rect{
     stroke: black;
     stroke-width: 2;
     fill: none;
 }
 
-.box.delete {
+.delete rect{
     stroke: red;
     stroke-width: 3;
     fill: #ffe6e6;
 }
 
-.box.insert {
+.insert rect{
     stroke: green;
     stroke-width: 3;
     fill: #e6ffe6;
 }
 
-.boxtext.equal {
+.equal text{
     fill: black;
     font-size: 0.5em;
 }
 
-.boxtext.delete {
+.delete text{
     fill: red;
     font-weight: 600;
     /* text-decoration-line: line-through; */
     font-size: 0.5em;
 }
 
-.boxtext.insert {
+.insert text{
     fill: green;
     font-weight: 600;
     /* text-decoration-line: underline; */

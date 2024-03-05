@@ -1,4 +1,4 @@
-const boxHeight = 50;
+const boxHeight = 75;
 const boxVerticalPadding = 25;
 
 function render(diffArr) {
@@ -7,7 +7,7 @@ function render(diffArr) {
     const rwdSvgWidth = parseInt(d3.select('#svgResult').style('width')),
         rwdSvgHeight = diffArr.length * (boxHeight + boxVerticalPadding);
     
-    const boxHorizontalPadding = rwdSvgWidth * 0.1;
+    const boxHorizontalPadding = rwdSvgWidth * 0.15;
     
     const svg = d3.select('#svgResult')
         .append('svg')
@@ -64,24 +64,58 @@ function render(diffArr) {
                 case "insert":
                     return  `translate(${boxHorizontalPadding}, ${i * (boxHeight + boxVerticalPadding)})`;
             }
-        });
+        })
+        .attr('class', d => `${d.type}`);
     
     var textWidth = [];
-    boxEnter.append("text")
-        .text(d => d.block)
-        .attr("y", boxHeight / 2)
-        .attr("text-anchor", "middle")
-        .attr("dy", "0.35em")
-        .attr("class", d =>`boxtext ${d.type}`)
-        .each(function(d,i) {
-            textWidth.push(this.getComputedTextLength() + 30);
+    // 
+    let curText = boxEnter.append("text")
+        .attr('y', boxHeight / 4)
+        .attr('text-anchor', 'middle')
+        .attr('dy', '0.35em')
+    curText.append("tspan")
+            .text('File: ')
+            .attr('font-weight', 700) 
+            .attr('font-size', '1em');
+    curText.append("tspan")
+            .text(d => `${d.file}`)
+            .attr('font-weight', 500);
+    curText.each(function(d,i) {
+            textWidth.push(this.getComputedTextLength() + 20);
         });
 
-    boxEnter.insert("rect", "text")
-        .attr("width", (d, i) => `${textWidth[i]}`)
-        .attr("height", boxHeight)
-        .attr("class", d => `box ${d.type}`)
-        .attr("transform",function(d,i) { 
+    curText = boxEnter.append("text")
+        .attr('y', boxHeight / 2)
+        .attr('dy', '0.35em')
+        .attr('transform',function(d,i) { 
+            return `translate(${-textWidth[i] / 2 + 10}, 0)`
+        });
+    curText.append("tspan")
+        .text('Function: ')
+        .attr('font-weight', 700) 
+        .attr('font-size', '1em');
+    curText.append("tspan")
+        .text(d => `${d.function}`)
+        .attr('font-weight', 500);
+        
+    curText = boxEnter.append("text")
+        .attr('y', boxHeight / 4 * 3)
+        .attr('dy', '0.35em')
+        .attr('transform',function(d,i) { 
+            return `translate(${-textWidth[i] / 2 + 10}, 0)`
+        });
+    curText.append("tspan")
+        .text('BBid: ')
+        .attr('font-weight', 700) 
+        .attr('font-size', '1em');
+    curText.append("tspan")
+        .text(d => `${d.bbid}`)
+        .attr('font-weight', 500);
+
+    boxEnter.insert('rect', 'text')
+        .attr('width', (d, i) => `${textWidth[i]}`)
+        .attr('height', boxHeight)
+        .attr('transform',function(d,i) { 
                 return `translate(${-textWidth[i] / 2}, 0)`
         });
     
@@ -105,7 +139,7 @@ function render(diffArr) {
                 if(redChain || greenChain) {
                     // From red to black
                     if(redChain) {
-                        drawArrow(outerG, redX, gHeight * lastRedId + boxHeight, blackX - pathShift, gHeight * i, 'red', 1);
+                        drawArrow(outerG, redX, gHeight * lastRedId + boxHeight, blackX - pathShift, gHeight * i, 'red', 2);
                         redChain = false;
                     }
                     // From green to black
@@ -116,7 +150,7 @@ function render(diffArr) {
                 }
                 // From black to black
                 else {
-                    drawArrow(outerG, blackX, gHeight * i - boxVerticalPadding, blackX, gHeight * i, 'black', 3);
+                    drawArrow(outerG, blackX, gHeight * i - boxVerticalPadding, blackX, gHeight * i, 'black', 1);
                 }
                 lastBlackId = i;
                 break;
@@ -124,12 +158,12 @@ function render(diffArr) {
             case 'delete':
                 // From red to red
                 if(redChain) {   
-                    drawArrow(outerG, redX, gHeight * (lastRedId + 1) - boxVerticalPadding, redX, gHeight * i, 'red', 4);
+                    drawArrow(outerG, redX, gHeight * (lastRedId + 1) - boxVerticalPadding, redX, gHeight * i, 'red', 1);
                 }
                 // From black to red
                 else {
                     if(lastBlackId !== -1) {
-                        drawArrow(outerG, blackX - pathShift, gHeight * (lastBlackId + 1) - boxVerticalPadding, redX, gHeight * i, 'red', 5);
+                        drawArrow(outerG, blackX - pathShift, gHeight * (lastBlackId + 1) - boxVerticalPadding, redX, gHeight * i, 'red', 3);
                         lastBlackId = i - 1;    // Store last black id for the following green chain that may appear
                     }
                     redChain = true;
@@ -140,12 +174,12 @@ function render(diffArr) {
             case 'insert':
                 // From green to green
                 if(greenChain) {
-                    drawArrow(outerG, greenX, gHeight * (lastGreenId + 1) - boxVerticalPadding, greenX, gHeight * i, 'green', 6);
+                    drawArrow(outerG, greenX, gHeight * (lastGreenId + 1) - boxVerticalPadding, greenX, gHeight * i, 'green', 1);
                 }
                 // From black to green
                 else {
                     if(lastBlackId !== -1) {
-                        drawArrow(outerG, blackX + pathShift, gHeight * (lastBlackId + 1) - boxVerticalPadding, greenX, gHeight * i, 'green', 7);
+                        drawArrow(outerG, blackX + pathShift, gHeight * (lastBlackId + 1) - boxVerticalPadding, greenX, gHeight * i, 'green', 3);
                         lastBlackId = i - 1;    // Store last black id for the following green chain that may appear
                     }   
                     greenChain = true;                
@@ -174,18 +208,9 @@ function handleResize() {
         .attr("transform", `translate(${rwdSvgWidth / 2}, 0)`);
 }
 
-function drawArrow(outerG, x1, y1, x2, y2, color, pathType) {
-    // outerG.append('line')
-    //     .attr('x1', x1)
-    //     .attr('y1', y1)
-    //     .attr('x2', x2)     
-    //     .attr('y2', y2)
-    //     .attr('stroke', color)
-    //     .attr("stroke-width", 3)
-    //     .attr('marker-end', `url(#${color}-arrow)`);
-    
+function drawArrow(outerG, x1, y1, x2, y2, color, pathType) {    
     switch(pathType) {
-        case 3: case 4: case 6: // Straight down arrow
+        case 1: // Straight down arrow
             outerG.append('path')
                 .attr('d', `M${x1} ${y1} L${x2} ${y2}`)
                 .attr('stroke', color)
@@ -193,7 +218,7 @@ function drawArrow(outerG, x1, y1, x2, y2, color, pathType) {
                 .attr('marker-end', `url(#${color}-arrow)`);
             break;
 
-        case 1: case 2: //Straight down then turn left or right arrow
+        case 2: //Straight down then turn left or right arrow
             outerG.append('path')
                 .attr('d', `M${x1} ${y1} L${x1} ${y2 - boxVerticalPadding / 2} L${x2} ${y2 - boxVerticalPadding / 2} L${x2} ${y2}`)
                 .attr('stroke', color)
@@ -202,7 +227,7 @@ function drawArrow(outerG, x1, y1, x2, y2, color, pathType) {
                 .attr('marker-end', `url(#${color}-arrow)`);
             break;
 
-        case 5: case 7: //Turn left or right then straight down and  arrow
+        case 3: //Turn left or right then straight down and arrow
             outerG.append('path')
                 .attr('d', `M${x1} ${y1} L${x1} ${y1 + boxVerticalPadding / 2} L${x2} ${y1 + boxVerticalPadding / 2} L${x2} ${y2}`)
                 .attr('stroke', color)
@@ -212,6 +237,5 @@ function drawArrow(outerG, x1, y1, x2, y2, color, pathType) {
 
             break;
     }
-
 }
     

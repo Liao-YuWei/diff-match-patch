@@ -85,12 +85,16 @@ function launchDiff() {
 }
 
 function diffArrPush(diffArr, hunk, type) {
-    var blocks = hunk.innerHTML.split("\n\u00B6<br>");
+    var blocks = hunk.innerHTML.split('\n\u00B6<br>');
     for (let i = 0; i < blocks.length; i++) {
         if (blocks[i] === '')
             continue;
+        
+        let blockInfo = blocks[i].split(',');
         diffArr.push({
-            block: `${blocks[i]}`,
+            file: `${blockInfo[2]}`,
+            function: `${blockInfo[0]}`,
+            bbid: `${blockInfo[1]}`,
             type: `${type}`
         });
     }
