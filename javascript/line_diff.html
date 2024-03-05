@@ -15,12 +15,9 @@
 
     <button type="button" onclick="launchDiff()"> Compute Diff </button>
 
-    <pre id="output1"></pre>
-    <pre id="output2"></pre>
-
     <h2>Result</h2>
     <h5 id="diffSpeed"></h5>
-    <!-- <p id="result"></p> -->
+    <h5 id="renderSpeed"></h5>
 
     <!-- <table width="100%"><tr>
       <td width="50%">
@@ -34,37 +31,16 @@
     </tr>
     </table> -->
 
-    <div id="svgResult">
-      <!-- <svg width="600" height="400"></svg> -->
-    </div>
-    
+    <div id="svgResult"></div>
 
     <script>
       // Intialized input strings
       var text1 = {str: ``};
       var text2 = {str: ``};
-      // const text1 = `Hello\nWorld\nThis is a test\n`;
-      // const text2 = `Hello\nWorld\nThis is another test\n`;
 
       // Read file from local txt
-      readFile("input1", "output1", text1);
-      readFile("input2", "output2", text2);
-
-      // // Diff
-      // const dmp = new diff_match_patch();
-      
-      // var diff = computeLineDiff(dmp, text1, text2);
-
-      // // Print diff in control panel
-      // console.log(diff);
-      // console.log("Differences:");
-      // diff.forEach(function(d) {
-      //   console.log(d[0], d[1]);
-      // });
-
-      // // Render HTML on browser
-      // var diffhtml = dmp.diff_prettyHtml(diff);
-      // document.getElementById("result").innerHTML = diffhtml;
+      readFile("input1", text1);
+      readFile("input2", text2);
     </script>
   </body>
 </html>
