@@ -58,25 +58,37 @@ function launchDiff() {
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(diffs, 'text/html');
-    const hunks = doc.querySelectorAll('*');
+    const blockGroups = doc.querySelectorAll('*');
     var diffArr = [];
+    var hunks = [], curHunk = {'start': -1, 'len': -1};
+    const hunkPadding = 3;
+    var numOfLines = {'num': 0};
     // Skip the 3 root tags(<html>, <head>, <body>) and iterate through all tags
-    for (let i = 3; i < hunks.length; i++) {
-        switch (hunks[i].tagName) {
+    for (let i = 3; i < blockGroups.length; i++) {
+        switch (blockGroups[i].tagName) {
             case 'SPAN':
-                diffArrPush(diffArr, hunks[i], 'equal');
+                diffArrPush(diffArr, blockGroups[i], 'equal', numOfLines, hunks, curHunk, hunkPadding);
                 break;
             case 'DEL':
-                diffArrPush(diffArr, hunks[i], 'delete');
+                diffArrPush(diffArr, blockGroups[i], 'delete', numOfLines, hunks, curHunk, hunkPadding);
                 break;
             case 'INS':
-                diffArrPush(diffArr, hunks[i], 'insert');
+                diffArrPush(diffArr, blockGroups[i], 'insert', numOfLines, hunks, curHunk, hunkPadding);
                 break;
             default:
                 break;
         }           
     }
-    render(diffArr);
+
+    // Finish the last hunk
+    if (curHunk.start !== -1) {
+        curHunk.len = numOfLines.num - curHunk.start;
+        hunksPush(hunks, curHunk);
+    }
+
+    render(diffArr, hunks);
+
+    changeSliderRange(hunks);
 
     ms_end = (new Date()).getTime();
     document.getElementById('renderSpeed').innerText = 'Render Time: ' + (ms_end - ms_start) / 1000 + 's';
@@ -84,8 +96,17 @@ function launchDiff() {
     // console.log(doc.getElementsByTagName('*'));
 }
 
-function diffArrPush(diffArr, hunk, type) {
-    var blocks = hunk.innerHTML.split('\n\u00B6<br>');
+function diffArrPush(diffArr, blockGroup, type, numOfLines, hunks, curHunk, hunkPadding) {
+    var blocks = blockGroup.innerHTML.split('\n\u00B6<br>');
+
+    if ((type === 'delete' || type === 'insert') && curHunk.start === -1) {
+        curHunk.start = (numOfLines.num - hunkPadding > 0) ? numOfLines.num - hunkPadding : 0;
+    } 
+    else if(type === 'equal' && curHunk.start !== -1 && blocks.length >= hunkPadding * 2) {
+        curHunk.len = numOfLines.num + hunkPadding - curHunk.start;
+        hunksPush(hunks, curHunk);
+    }
+
     for (let i = 0; i < blocks.length; i++) {
         if (blocks[i] === '')
             continue;
@@ -97,5 +118,30 @@ function diffArrPush(diffArr, hunk, type) {
             bbid: `${blockInfo[1]}`,
             type: `${type}`
         });
+        numOfLines.num++;
     }
+}
+
+function hunksPush(hunks, curHunk) {
+    hunks.push({... curHunk});
+    curHunk.start = -1;
+    curHunk.len= -1;
+}
+
+function changeSliderRange(hunks) {
+    if (hunks.length === 0)
+        return;
+
+    let curMin = Number.MAX_VALUE, curMax = -Number.MAX_VALUE;
+    for (let i = 0; i < hunks.length; i++) {
+        console.log(hunks[i].len);
+        curMin = Math.min(curMin, hunks[i].len);
+        curMax = Math.max(curMax, hunks[i].len);
+    }
+
+    let slider = document.getElementById("hunkSize");
+    slider.min = curMin;
+    slider.max = curMax;
+    document.getElementById("hunkSizeMin").innerText = slider.min;
+    document.getElementById("hunkSizeMax").innerText = slider.max;
 }
