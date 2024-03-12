@@ -90,6 +90,12 @@ function launchDiff() {
 
     changeSliderRange(hunks);
 
+    var mybutton = document.getElementById("previousBtn");
+    mybutton.style.display = "block";
+
+    var mybutton = document.getElementById("nextBtn");
+    mybutton.style.display = "block";
+
     ms_end = (new Date()).getTime();
     document.getElementById('renderSpeed').innerText = 'Render Time: ' + (ms_end - ms_start) / 1000 + 's';
 
@@ -141,10 +147,12 @@ function changeSliderRange(hunks) {
     let slider = document.getElementById("hunkSize");
     slider.min = curMin;
     slider.max = curMax;
+    slider.value = curMin;
     document.getElementById("hunkSizeMin").innerText = `min: ${slider.min}`;
     document.getElementById("hunkSizeMax").innerText = `max: ${slider.max}`;
 
     let sliderOutput = document.getElementById("curHunkSize");
+    sliderOutput.innerHTML = `current threshold: ${slider.value}`;
     slider.oninput = function() {
         sliderOutput.innerHTML = `current threshold: ${this.value}`;
         drawHunks(hunks, this.value);

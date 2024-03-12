@@ -219,8 +219,6 @@ function handleResize() {
 }
 
 function drawHunks(hunks, hunkSize) {
-    console.log(hunks);
-    console.log(hunkSize);
     d3.select('#hunks').remove();
     const svg = d3.select('#svgResult svg');
     const rwdSvgWidth = parseInt(d3.select('#svgResult').style('width'));

@@ -16,7 +16,7 @@
     <div>
       <p>Hunk Range Slider</p>
       <span id="hunkSizeMin"></span>
-      <input type="range" min="1" max="100" value="50" id="hunkSize">
+      <input type="range" min="0" max="100" value="0" id="hunkSize">
       <span id="hunkSizeMax"></span>
       <span id="curHunkSize"></span>
     </div>
@@ -40,6 +40,13 @@
     </table> -->
 
     <div id="svgResult"></div>
+
+    <button onclick="moveToPreviousHunk()" id="previousBtn" class="scrollBtn" title="Go to previous hunk">
+      <i class="arrow up"></i>
+    </button>
+    <button onclick="moveToNextHunk()" id="nextBtn" class="scrollBtn" title="Go to next hunk">
+      <i class="arrow down"></i>
+    </button>
 
     <script>
       // Intialized input strings
