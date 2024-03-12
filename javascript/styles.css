@@ -1,7 +1,3 @@
-/* .box {
-    fill: none;
-} */
-
 #svgResult{
     width: 95%;
     margin: auto;
@@ -44,4 +40,8 @@
     font-weight: 600;
     /* text-decoration-line: underline; */
     font-size: 0.5em;
+}
+
+input[type=range] {
+    width: 30%;
 }

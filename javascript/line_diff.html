@@ -18,6 +18,7 @@
       <span id="hunkSizeMin"></span>
       <input type="range" min="1" max="100" value="50" id="hunkSize">
       <span id="hunkSizeMax"></span>
+      <span id="curHunkSize"></span>
     </div>
 
     <button type="button" onclick="launchDiff()"> Compute Diff </button>
@@ -49,8 +50,16 @@
       readFile("input1", text1);
       readFile("input2", text2);
 
-      document.getElementById("hunkSizeMin").innerText = document.getElementById("hunkSize").min;
-      document.getElementById("hunkSizeMax").innerText = document.getElementById("hunkSize").max;
+      let slider = document.getElementById("hunkSize");
+      document.getElementById("hunkSizeMin").innerText = `min: ${slider.min}`;
+      document.getElementById("hunkSizeMax").innerText = `max: ${slider.max}`;
+
+      let sliderOutput = document.getElementById("curHunkSize");
+      sliderOutput.innerHTML = `current threshold: ${slider.value}`;
+
+      slider.oninput = function() {
+        sliderOutput.innerHTML = `current threshold: ${this.value}`;
+      }
     </script>
   </body>
 </html>

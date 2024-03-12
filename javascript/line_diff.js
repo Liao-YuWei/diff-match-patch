@@ -134,7 +134,6 @@ function changeSliderRange(hunks) {
 
     let curMin = Number.MAX_VALUE, curMax = -Number.MAX_VALUE;
     for (let i = 0; i < hunks.length; i++) {
-        console.log(hunks[i].len);
         curMin = Math.min(curMin, hunks[i].len);
         curMax = Math.max(curMax, hunks[i].len);
     }
@@ -142,6 +141,12 @@ function changeSliderRange(hunks) {
     let slider = document.getElementById("hunkSize");
     slider.min = curMin;
     slider.max = curMax;
-    document.getElementById("hunkSizeMin").innerText = slider.min;
-    document.getElementById("hunkSizeMax").innerText = slider.max;
+    document.getElementById("hunkSizeMin").innerText = `min: ${slider.min}`;
+    document.getElementById("hunkSizeMax").innerText = `max: ${slider.max}`;
+
+    let sliderOutput = document.getElementById("curHunkSize");
+    slider.oninput = function() {
+        sliderOutput.innerHTML = `current threshold: ${this.value}`;
+        drawHunks(hunks, this.value);
+    }
 }

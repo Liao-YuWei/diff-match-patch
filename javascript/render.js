@@ -8,21 +8,13 @@ function render(diffArr, hunks) {
         rwdSvgHeight = diffArr.length * (boxHeight + boxVerticalPadding);
     
     const boxHorizontalPadding = rwdSvgWidth * 0.15;
-    
+
     const svg = d3.select('#svgResult')
         .append('svg')
         .attr('width', rwdSvgWidth)
         .attr('height', rwdSvgHeight);
 
-    const hunksG = svg.append('g')
-        .attr('id', 'hunks');
-
-    hunksG.selectAll('rect').data(hunks)
-        .enter().append('rect')
-            .attr('width', rwdSvgWidth)
-            .attr('height', d => `${d.len * (boxHeight + boxVerticalPadding) - boxVerticalPadding}`)
-            .attr('fill', '#c8e8fa')
-            .attr('transform', d => `translate(0, ${d.start * (boxHeight + boxVerticalPadding)})`);
+    drawHunks(hunks, 0);
 
     const cfgG = svg.append('g')
         .attr('transform', `translate(${rwdSvgWidth / 2}, 0)`)
@@ -224,6 +216,24 @@ function handleResize() {
         .attr('width', rwdSvgWidth);
     d3.select('#cfg')
         .attr('transform', `translate(${rwdSvgWidth / 2}, 0)`);
+}
+
+function drawHunks(hunks, hunkSize) {
+    console.log(hunks);
+    console.log(hunkSize);
+    d3.select('#hunks').remove();
+    const svg = d3.select('#svgResult svg');
+    const rwdSvgWidth = parseInt(d3.select('#svgResult').style('width'));
+
+    const hunksG = svg.insert('g', 'g')
+        .attr('id', 'hunks');
+
+    hunksG.selectAll('rect').data(hunks)
+        .enter().filter(function(d){ return d.len >= hunkSize; }).append('rect')
+            .attr('width', rwdSvgWidth)
+            .attr('height', d => `${d.len * (boxHeight + boxVerticalPadding) - boxVerticalPadding}`)
+            .attr('fill', '#c8e8fa')
+            .attr('transform', d => `translate(0, ${d.start * (boxHeight + boxVerticalPadding)})`);
 }
 
 function drawArrow(cfgG, x1, y1, x2, y2, color, pathType) {    
