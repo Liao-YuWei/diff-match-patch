@@ -90,11 +90,13 @@ function launchDiff() {
 
     changeSliderRange(hunks);
 
-    var mybutton = document.getElementById("previousBtn");
-    mybutton.style.display = "block";
+    let previousBtn = document.getElementById("previousBtn");
+    // previousBtn.style.display = "block";
+    previousBtn.onclick = function() { moveToPreviousHunk(hunks) };
 
-    var mybutton = document.getElementById("nextBtn");
-    mybutton.style.display = "block";
+    let nextBtn = document.getElementById("nextBtn");
+    // nextBtn.style.display = "block"; 
+    nextBtn.onclick = function() { moveToNextHunk(hunks) };
 
     ms_end = (new Date()).getTime();
     document.getElementById('renderSpeed').innerText = 'Render Time: ' + (ms_end - ms_start) / 1000 + 's';
@@ -108,7 +110,7 @@ function diffArrPush(diffArr, blockGroup, type, numOfLines, hunks, curHunk, hunk
     if ((type === 'delete' || type === 'insert') && curHunk.start === -1) {
         curHunk.start = (numOfLines.num - hunkPadding > 0) ? numOfLines.num - hunkPadding : 0;
     } 
-    else if(type === 'equal' && curHunk.start !== -1 && blocks.length >= hunkPadding * 2) {
+    else if(type === 'equal' && curHunk.start !== -1 && blocks.length > hunkPadding * 2) {
         curHunk.len = numOfLines.num + hunkPadding - curHunk.start;
         hunksPush(hunks, curHunk);
     }
@@ -158,3 +160,52 @@ function changeSliderRange(hunks) {
         drawHunks(hunks, this.value);
     }
 }
+
+function moveToPreviousHunk(hunks) {
+    const topShift = 30;
+    let elements = document.getElementById("hunks").getElementsByTagName('*');
+    for (let i = elements.length - 1; i >= 0; i--) {
+        let element = elements[i];
+        let yPos = element.getBoundingClientRect().y;
+        if (yPos < -topShift) {
+            window.scrollTo({ top: window.scrollY + yPos - topShift, behavior: 'smooth'});
+            break;
+        }
+    }
+}
+
+function moveToNextHunk(hunks) {
+    const topShift = 30;
+    let elements = document.getElementById("hunks").getElementsByTagName('*');
+    for (let i = 0; i < elements.length; i++) {
+        let element = elements[i];
+        let yPos = element.getBoundingClientRect().y;
+        if (yPos > topShift) {
+            window.scrollTo({ top: window.scrollY + yPos - topShift, behavior: 'smooth'});
+            break;
+        }
+    }
+}
+
+var didScroll = false;
+
+window.onscroll = function() {
+    didScroll = true;
+};
+
+setInterval(function() {
+    if ( didScroll ) {
+        didScroll = false;
+        const topShift = 30;
+        let elements = document.getElementById("hunks").getElementsByTagName('*');
+        if (elements[0].getBoundingClientRect().y > topShift)
+            previousBtn.style.display = 'none';
+        else
+            previousBtn.style.display = 'block';
+
+        if (elements[elements.length - 1].getBoundingClientRect().y < -topShift)
+            nextBtn.style.display = 'none';
+        else
+            nextBtn.style.display = 'block';
+    }
+}, 500);
