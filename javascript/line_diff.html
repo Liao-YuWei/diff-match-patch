@@ -13,15 +13,15 @@
     <input type="file" name="input2" id="input2">
     <br>
 
-    <div>
-      <p>Hunk Range Slider</p>
+    <button type="button" onclick="launchDiff()"> Compute Diff </button>
+
+    <div id="hunkSizeG">
+      <p>Hunk Size Threshold</p>
       <span id="hunkSizeMin"></span>
       <input type="range" min="0" max="100" value="0" id="hunkSize">
       <span id="hunkSizeMax"></span>
       <span id="curHunkSize"></span>
     </div>
-
-    <button type="button" onclick="launchDiff()"> Compute Diff </button>
 
     <h2>Result</h2>
     <h5 id="diffSpeed"></h5>
@@ -57,16 +57,16 @@
       readFile("input1", text1);
       readFile("input2", text2);
 
-      let slider = document.getElementById("hunkSize");
-      document.getElementById("hunkSizeMin").innerText = `min: ${slider.min}`;
-      document.getElementById("hunkSizeMax").innerText = `max: ${slider.max}`;
+      // let slider = document.getElementById("hunkSize");
+      // document.getElementById("hunkSizeMin").innerText = `min: ${slider.min}`;
+      // document.getElementById("hunkSizeMax").innerText = `max: ${slider.max}`;
 
-      let sliderOutput = document.getElementById("curHunkSize");
-      sliderOutput.innerHTML = `current threshold: ${slider.value}`;
+      // let sliderOutput = document.getElementById("curHunkSize");
+      // sliderOutput.innerHTML = `current threshold: ${slider.value}`;
 
-      slider.oninput = function() {
-        sliderOutput.innerHTML = `current threshold: ${this.value}`;
-      }
+      // slider.oninput = function() {
+      //   sliderOutput.innerHTML = `current threshold: ${this.value}`;
+      // }
     </script>
   </body>
 </html>

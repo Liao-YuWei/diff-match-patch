@@ -146,6 +146,8 @@ function changeSliderRange(hunks) {
         curMax = Math.max(curMax, hunks[i].len);
     }
 
+    document.getElementById("hunkSizeG").style.display = 'block';
+
     let slider = document.getElementById("hunkSize");
     slider.min = curMin;
     slider.max = curMax;

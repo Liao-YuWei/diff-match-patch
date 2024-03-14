@@ -42,7 +42,11 @@
     font-size: 0.5em;
 }
 
-input[type=range] {
+#hunkSizeG {
+    display: none;
+}
+
+#hunkSize {
     width: 30%;
 }
 
