@@ -141,11 +141,20 @@ function render(diffArr, hunks) {
     }
     const gHeight = boxHeight + boxVerticalPadding;
     const blackX = 0, redX = -boxHorizontalPadding, greenX = boxHorizontalPadding;
-    const pathShift = 5;
+    const pathShift = 15;
     for (let i = 1; i < diffArr.length; i++) {
         switch(diffArr[i].type) {
             case 'equal':
                 if(redChain || greenChain) {
+                    // From black to black
+                    if(!greenChain) {
+                        drawArrow(cfgG, blackX + pathShift, gHeight * lastBlackId + boxHeight, blackX + pathShift, gHeight * i, 'green', 1);
+                    }
+                    // From black to black
+                    if(!redChain) {
+                        drawArrow(cfgG, blackX - pathShift, gHeight * lastBlackId + boxHeight, blackX - pathShift, gHeight * i, 'red', 1);
+                    }
+
                     // From red to black
                     if(redChain) {
                         drawArrow(cfgG, redX, gHeight * lastRedId + boxHeight, blackX - pathShift, gHeight * i, 'red', 2);
