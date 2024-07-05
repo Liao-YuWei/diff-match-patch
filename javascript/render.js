@@ -141,7 +141,7 @@ function render(diffArr, hunks) {
     }
     const gHeight = boxHeight + boxVerticalPadding;
     const blackX = 0, redX = -boxHorizontalPadding, greenX = boxHorizontalPadding;
-    const pathShift = 15;
+    const pathShift = 30;
     for (let i = 1; i < diffArr.length; i++) {
         switch(diffArr[i].type) {
             case 'equal':

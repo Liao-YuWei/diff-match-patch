@@ -21,40 +21,46 @@ function computeLineDiff(text1, text2) {
     return diffHtml;
 }
 
-function readFile(inputId, text) {
-    document.getElementById(inputId)
-        .addEventListener('change', function () {
+// function readFile(inputId, text) {
+//     document.getElementById(inputId)
+//         .addEventListener('change', function () {
 
-          let fr = new FileReader();
-          fr.onload = function () {
-            text.str = fr.result;
-          }
-          try {
-            fr.readAsText(this.files[0]);
-          }
-          catch(e) {
-            text.str = ``;
-            console.log(e);
-          }
+//           let fr = new FileReader();
+//           fr.onload = function () {
+//             text.str = fr.result;
+//           }
+//           try {
+//             fr.readAsText(this.files[0]);
+//           }
+//           catch(e) {
+//             text.str = ``;
+//             console.log(e);
+//           }
           
-        })
-}
+//         })
+// }
 
 function launchDiff() {
+    if (text1.str === `` || text2.str === ``) {
+        document.getElementById("empty").style.display = 'block';
+        return;
+    }
+    document.getElementById("empty").style.display = 'none';
+
     /**
      * Compute diff
      */
-    var ms_start = (new Date()).getTime();
+    // var ms_start = (new Date()).getTime();
       
     var diffs = computeLineDiff(text1.str, text2.str);
 
-    var ms_end = (new Date()).getTime();
-    document.getElementById('diffSpeed').innerText = 'Diff Time: ' + (ms_end - ms_start) / 1000 + 's';
+    // var ms_end = (new Date()).getTime();
+    // document.getElementById('diffSpeed').innerText = 'Diff Time: ' + (ms_end - ms_start) / 1000 + 's';
 
     /** 
      * Render graph on DOM
      */
-    ms_start = (new Date()).getTime();
+    // ms_start = (new Date()).getTime();
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(diffs, 'text/html');
@@ -98,8 +104,8 @@ function launchDiff() {
     // nextBtn.style.display = "block"; 
     nextBtn.onclick = function() { moveToNextHunk(hunks) };
 
-    ms_end = (new Date()).getTime();
-    document.getElementById('renderSpeed').innerText = 'Render Time: ' + (ms_end - ms_start) / 1000 + 's';
+    // ms_end = (new Date()).getTime();
+    // document.getElementById('renderSpeed').innerText = 'Render Time: ' + (ms_end - ms_start) / 1000 + 's';
 
     // console.log(doc.getElementsByTagName('*'));
 }
@@ -136,10 +142,29 @@ function hunksPush(hunks, curHunk) {
     curHunk.len= -1;
 }
 
-function changeSliderRange(hunks) {
-    if (hunks.length === 0)
-        return;
+function debounce(func, wait) {
+    let timeout;
+  
+    return function executedFunction() {
+      const context = this;
+      const args = arguments;
+      
+      const later = function() {
+        timeout = null;
+        func.apply(context, args);
+      };
+  
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+}
 
+function changeSliderRange(hunks) {
+    if (hunks.length === 0) {
+        document.getElementById("hunkSizeG").style.display = 'none';
+        return;
+    }
+        
     let curMin = Number.MAX_VALUE, curMax = -Number.MAX_VALUE;
     for (let i = 0; i < hunks.length; i++) {
         curMin = Math.min(curMin, hunks[i].len);
@@ -148,19 +173,33 @@ function changeSliderRange(hunks) {
 
     document.getElementById("hunkSizeG").style.display = 'block';
 
-    let slider = document.getElementById("hunkSize");
-    slider.min = curMin;
-    slider.max = curMax;
-    slider.value = curMin;
-    document.getElementById("hunkSizeMin").innerText = `min: ${slider.min}`;
-    document.getElementById("hunkSizeMax").innerText = `max: ${slider.max}`;
+    let inputBox = document.getElementById("hunkSize");
+    inputBox.min = curMin;
+    inputBox.max = curMax;
+    inputBox.value = curMin;
+    document.getElementById("hunkSizeMin").innerText = `${inputBox.min}`;
+    document.getElementById("hunkSizeMax").innerText = `${inputBox.max}`;
 
-    let sliderOutput = document.getElementById("curHunkSize");
-    sliderOutput.innerHTML = `current threshold: ${slider.value}`;
-    slider.oninput = function() {
-        sliderOutput.innerHTML = `current threshold: ${this.value}`;
+    const hunkSizeVisual = document.getElementById('hunkSizeVisual');
+    hunkSizeVisual.max = curMax - curMin;
+    hunkSizeVisual.value = 0;
+
+    // let sliderOutput = document.getElementById("curHunkSize");
+    // sliderOutput.innerHTML = `current threshold: ${slider.value}`;
+    
+    inputBox.oninput = debounce(function() {
+        // sliderOutput.innerHTML = `current threshold: ${this.value}`;
+        if (this.value < curMin) {
+            this.value = curMin;
+        }
+        else if (this.value > curMax) {
+            this.value = curMax;
+        }
+
+        const hunkSizeVisual = document.getElementById('hunkSizeVisual');
+        hunkSizeVisual.value = this.value - curMin;
         drawHunks(hunks, this.value);
-    }
+    }, 800);
 }
 
 function moveToPreviousHunk(hunks) {
@@ -169,8 +208,9 @@ function moveToPreviousHunk(hunks) {
     for (let i = elements.length - 1; i >= 0; i--) {
         let element = elements[i];
         let yPos = element.getBoundingClientRect().y;
+        const resultContainer = document.getElementById('resultContainer');
         if (yPos < -topShift) {
-            window.scrollTo({ top: window.scrollY + yPos - topShift, behavior: 'smooth'});
+            resultContainer.scrollTo({ top: resultContainer.scrollTop + yPos - topShift, behavior: 'smooth'});
             break;
         }
     }
@@ -182,8 +222,9 @@ function moveToNextHunk(hunks) {
     for (let i = 0; i < elements.length; i++) {
         let element = elements[i];
         let yPos = element.getBoundingClientRect().y;
+        const resultContainer = document.getElementById('resultContainer');
         if (yPos > topShift) {
-            window.scrollTo({ top: window.scrollY + yPos - topShift, behavior: 'smooth'});
+            resultContainer.scrollTo({ top: resultContainer.scrollTop + yPos - topShift, behavior: 'smooth'});
             break;
         }
     }
@@ -191,9 +232,9 @@ function moveToNextHunk(hunks) {
 
 var didScroll = false;
 
-window.onscroll = function() {
-    didScroll = true;
-};
+// window.onscroll = function() {
+//     didScroll = true;
+// };
 
 setInterval(function() {
     if ( didScroll ) {
@@ -211,3 +252,80 @@ setInterval(function() {
             nextBtn.style.display = 'block';
     }
 }, 500);
+
+document.addEventListener('DOMContentLoaded', function() {
+    const resultContainer = document.getElementById('resultContainer');
+    resultContainer.onscroll = onResultScroll;
+});
+
+function onResultScroll() {
+    didScroll = true;
+}
+
+
+function readFile(inputId, text) {
+    document.addEventListener('DOMContentLoaded', function() {
+        var area = document.querySelector('#'+inputId)
+        var input = area.querySelector('input[type="file"]');
+        var button = area.querySelector('button');
+        var filenameDisplay = area.querySelector('.filename');
+    
+        // Highlight and handle drag over
+        area.addEventListener('dragover', function(event) {
+            event.preventDefault();
+            area.style.backgroundColor = '#7A88FA'; // Highlight color
+        });
+    
+        // Reset background color on drag leave
+        area.addEventListener('dragleave', function(event) {
+            area.style.backgroundColor = '#6C7AED'; // Original color
+        });
+    
+        // Handle file drop
+        area.addEventListener('drop', function(event) {
+            event.preventDefault();
+            area.style.backgroundColor = '#6C7AED'; // Reset color
+            if (event.dataTransfer.files.length > 0) {
+                input.files = event.dataTransfer.files;
+
+                let fr = new FileReader();
+                    fr.onload = function () {
+                    text.str = fr.result;
+                }
+                try {
+                    fr.readAsText(input.files[0]);
+                    filenameDisplay.textContent = 'Selected file: ' + input.files[0].name;
+                }
+                catch(e) {
+                    text.str = ``;
+                    console.log(e);
+                    filenameDisplay.textContent = 'No file selected';
+                }
+                // console.log(input.files[0].name + ' was added to ' + input.name);
+            }
+        });
+
+        // Open file selector when box is clicked
+        button.addEventListener('click', function() {
+            input.click(); // Simulate click on the input
+        });
+
+        // Handle selected file
+        input.addEventListener('change', function () {
+            let fr = new FileReader();
+                fr.onload = function () {
+                text.str = fr.result;
+            }
+            try {
+                fr.readAsText(this.files[0]);
+                filenameDisplay.textContent = 'Selected file: ' + this.files[0].name;
+            }
+            catch(e) {
+                text.str = ``;
+                console.log(e);
+                filenameDisplay.textContent = 'No file selected';
+            }
+            // console.log(this.files[0].name + ' was added to ' + this.name);
+        })
+    });
+}

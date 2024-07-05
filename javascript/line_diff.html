@@ -8,45 +8,71 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <input type="file" name="input1" id="input1">
-    <br>
-    <input type="file" name="input2" id="input2">
-    <br>
+    <div id="inputContainer">
+      <p><strong>Attack-Free Control Flow Log File:</strong></p>
+      <div class="fileDropArea" id="fileDropArea1"> 
+        <input type="file" name="input1" id="input1" hidden>
+        <label for="input1" class="fileLabel">Drag & Drop to Upload File OR <button class="browse-btn">Browse File</button></label>
+        <div class="filename" id="filename1">No file selected</div>
+      </div>
 
-    <button type="button" onclick="launchDiff()"> Compute Diff </button>
+      <p><strong>Under-Attack Control Flow Log File:</strong></p>
+      <div class="fileDropArea" id="fileDropArea2">
+        <input type="file" name="input2" id="input2" hidden>
+        <label for="input2" class="fileLabel">Drag & Drop to Upload File OR <button class="browse-btn">Browse File</button></label>
+        <div class="filename" id="filename1">No file selected</div>
+      </div>
+      
+      <div style="display: flex; flex-direction: column;">
+        <div style="text-align: right;">
+          <button id="launch-btn" type="button" onclick="launchDiff()"> Control Flow Diff </button>
+        </div>
+        <p id="empty">Please upload the above 2 files!</p>
+      </div>
 
-    <div id="hunkSizeG">
-      <p>Hunk Size Threshold</p>
-      <span id="hunkSizeMin"></span>
-      <input type="range" min="0" max="100" value="0" id="hunkSize">
-      <span id="hunkSizeMax"></span>
-      <span id="curHunkSize"></span>
+      <div id="hunkSizeG">
+        <p><strong>Hunk Size Threshold</strong></p>
+        <span>min</span>
+        <span style="float:right;">max</span>
+        <progress id="hunkSizeVisual" value="0" max="100"></progress>
+        <span id="hunkSizeMin"></span>
+        <span id="hunkSizeMax" style="float:right;"></span>
+        <p>Current Threshold:
+          <input type="number" id="hunkSize" min="0" max="100" value="0" step="1">
+        </p>
+      </div>
     </div>
 
-    <h2>Result</h2>
-    <h5 id="diffSpeed"></h5>
-    <h5 id="renderSpeed"></h5>
+    <div id="resultContainer">
+      <!-- <h2>Result</h2>
+      <h5 id="diffSpeed"></h5>
+      <h5 id="renderSpeed"></h5> -->
 
-    <!-- <table width="100%"><tr>
-      <td width="50%">
-        <h3>Original File</h3>
-        <div id="originalFile" style="width: 100%"></div>
-      </td>
-      <td width="50%">
-        <h3>New File</h3>
-        <div id="newFile" style="width: 100%"></div>
-      </td>
-    </tr>
-    </table> -->
+      <!-- <table width="100%"><tr>
+        <td width="50%">
+          <h3>Original File</h3>
+          <div id="originalFile" style="width: 100%"></div>
+        </td>
+        <td width="50%">
+          <h3>New File</h3>
+          <div id="newFile" style="width: 100%"></div>
+        </td>
+      </tr>
+      </table> -->
 
-    <div id="svgResult"></div>
+      <div id="title">
+        <span id="attack-free-title">Attack-Free Control Flow</span>
+        <span id="under-attack-title">Under Attack Control Flow</span>
+      </div>
+      <div id="svgResult"></div>
+    </div>
 
-    <button id="previousBtn" class="scrollBtn" title="Go to previous hunk">
-      <i class="arrow up"></i>
-    </button>
-    <button id="nextBtn" class="scrollBtn" title="Go to next hunk">
-      <i class="arrow down"></i>
-    </button>
+      <button id="previousBtn" class="scrollBtn" title="Go to previous hunk">
+        <i class="arrow up"></i>
+      </button>
+      <button id="nextBtn" class="scrollBtn" title="Go to next hunk">
+        <i class="arrow down"></i>
+      </button>
 
     <script>
       // Intialized input strings
@@ -54,8 +80,11 @@
       var text2 = {str: ``};
 
       // Read file from local txt
-      readFile("input1", text1);
-      readFile("input2", text2);
+      // readFile("input1", text1);
+      // readFile("input2", text2);
+
+      readFile("fileDropArea1", text1);
+      readFile("fileDropArea2", text2);
 
       // let slider = document.getElementById("hunkSize");
       // document.getElementById("hunkSizeMin").innerText = `min: ${slider.min}`;
